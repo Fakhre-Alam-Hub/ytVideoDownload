@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block title %}Home{% endblock title %}
+
+{% block body %}
+
+<div class="container">
+    <div class="head-top" style="display: flex; flex-direction: column; align-items: center;">
+        <div>
+            <h1>Online Youtube Video Downloader</h1>
+        </div>
+        <div class="container">
+            <div class="mt-5">
+                <form action="" method="post" style="display: flex;justify-content: center;align-items: baseline;">
+                    {% csrf_token %}
+                    <div class="input-group mb-3">
+                        <input type="text" id="link" name="link" class="form-control" placeholder="Paste video url here">
+                        <button type="submit" class="btn btn-outline-info">Download</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="container" style="display: flex;">
+        {% if thumbnail_url %}
+        <div class="" style="padding: 10px;">
+            <div class="card" style="width: 18rem;">
+                <img src={{thumbnail_url}} class="card-img-top" alt={{title}}>
+                <div class="card-body">
+                  <h5 class="card-title fw-bold fs-5">{{title}}</h5>
+                </div>
+              </div>
+        </div>
+        {% endif %}
+        {% if error %}
+        <div class="" style="padding: 10px;">
+            <h4 class="fw-bold fs-5" >{{error}}</h4>
+        </div>
+        {% endif %}
+
+        {% if myVideoStreams %}
+        <div class="container">
+            <table class="table table-striped mt-4" id="myTable">
+                <thead>
+                    <tr class="header">
+                        <th>Video Type</th>
+                        <th>Resolution</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for item in myVideoStreams %}
+                    <tr>
+                        <td>{{item.mime_type}}</td>
+                        <td>{{item.resolution}}</td>
+                        <td>
+                            <a href="{% url 'download_video' video_url=video_url resolution=item.resolution %}">
+                            <button type="button" class="btn btn-outline-info">Download</button></a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock body %}
