@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+
+{% block title %}Playlist{% endblock title %}
+
+{% block body %}
+<style>
+    .head-top {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    a {
+        text-decoration: none;
+    }
+</style>
+
+<div class="container">
+    <div class="head-top border mt-2 border-secondary rounded-3 bg-dark bg-gradient">
+        <div class="text-white text-center">
+            <h1>Online Youtube Video Downloader</h1>
+        </div>
+        <div class="container">
+            <div class="mt-5">
+                <form action="" method="post" style="display: flex;justify-content: center;align-items: baseline;">
+                    {% csrf_token %}
+                    <div class="container" style="display: flex;flex-wrap: wrap;">
+                        <div class="input-group mb-3">
+                            <input type="text" id="link" name="link" class="form-control" placeholder="Paste playlist video url here">
+                            <button type="submit" class="btn btn-info">Download</button>
+                        </div>
+                        <div class="input-group mb-3" style="align-items:baseline;">
+                            <label class="input-group-text" for="inputGroupSelect02">Quality</label>
+                            <select class="form-select" name="quality" id="inputGroupSelect02">
+                                <option value="mp4 720p" selected>mp4 720p</option>
+                                {% for opt in video_qualities_details %}
+                                    <option value="{{ opt.mimetype }} {{ opt.resolution }}">{{opt.mimetype}} {{opt.resolution}}
+                                        {% if not opt.hasAudio %}
+                                        (no audio)
+                                        {% endif %}
+                                    </option>
+                                {% endfor %}
+                            </select>
+
+                            <div style="display: flex;">
+                                <div class="form-check form-switch" style="margin-left: 10px;">
+                                    <input class="form-check-input" name="addPrefix" type="checkbox" role="switch" id="addPrefix" checked>
+                                    <label class="form-check-label text-white" for="addPrefix">Add prefix order number </label>
+                                </div>
+                                <div class="form-check form-switch" style="margin-left: 10px;">
+                                    <input class="form-check-input" name="reduceQuality" type="checkbox" role="switch" id="reduceQuality" checked>
+                                    <label class="form-check-label text-white" for="reduceQuality">Auto reduce quality if not exist</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-2" style="display: flex;">
+        {% if error %}
+        <div class="" style="padding: 10px;">
+            <h4 class="fw-bold fs-5" >{{error}}</h4>
+        </div>
+        {% endif %}
+
+        {% if all_videoStreams %}
+        <div class="container">
+            <table id="myTable" class="table table-striped table-bordered">
+                <thead>
+                    <tr class="header">
+                        <th>#</th>
+                        <th>Thumbnail</th>
+                        <th>Title</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for item in all_videoStreams %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>
+                            {% if item.thumbnail_url %}
+                            <div class="" >
+                                <div class="card" style="width: 100px; height: 60px">
+                                    <img src={{item.thumbnail_url}} class="card-img-top" alt="thumbnail img">
+                                  </div>
+                            </div>
+                            {% endif %}
+                        </td>
+                        <td>{{item.title}}</td>
+                        <td>
+                            <a href="{% url 'download_video' addPrefix=addPrefix counter=forloop.counter video_url=item.video_url resolution=item.resolution %}">
+                            <button type="button" class="btn btn-outline-info">
+                                {{item.filesize}} MB 
+                                {% if not item.audio %}
+                                    <img src='/static/images/no-audio.png' class="" height="20px" width="20px" alt="No audio icon">
+                                {% endif %}
+                            </button></a>                            
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock body %}

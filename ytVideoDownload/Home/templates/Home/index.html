@@ -1,70 +1,102 @@
 {% extends 'base.html' %}
-
-{% block title %}Home{% endblock title %}
+{% block title %}Single{% endblock title %}
 
 {% block body %}
+<style>
+    .head-top {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
 
-<div class="container">
-    <div class="head-top" style="display: flex; flex-direction: column; align-items: center;">
-        <div>
+    a {
+        text-decoration: none;
+    }
+</style>
+<div class="container ">    
+    <div class="head-top border mt-2 border-secondary rounded-3 bg-dark bg-gradient">
+        <div class="text-white text-center">
             <h1>Online Youtube Video Downloader</h1>
         </div>
         <div class="container">
             <div class="mt-5">
                 <form action="" method="post" style="display: flex;justify-content: center;align-items: baseline;">
                     {% csrf_token %}
-                    <div class="input-group mb-3">
-                        <input type="text" id="link" name="link" class="form-control" placeholder="Paste video url here">
-                        <button type="submit" class="btn btn-outline-info">Download</button>
+                    <div class="container" style="display: flex;flex-wrap: wrap;">
+                        <div class="input-group mb-3">
+                            <input type="text" id="link" name="link" class="form-control" placeholder="Paste video url here">
+                            <button type="submit" class="btn btn-info">Download</button>
+                        </div>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 
-    <div class="container" style="display: flex;">
-        {% if thumbnail_url %}
-        <div class="" style="padding: 10px;">
-            <div class="card" style="width: 18rem;">
-                <img src={{thumbnail_url}} class="card-img-top" alt={{title}}>
-                <div class="card-body">
-                  <h5 class="card-title fw-bold fs-5">{{title}}</h5>
+    <div class="mt-2" >
+        <div class="row">
+            <div class="col-sm-12 col-md-4 col-lg-4">
+                {% if thumbnail_url %}
+                <div class="img-fluid img-thumbnail" style="padding: 10px;">
+                    <div class="card">
+                        <img src={{thumbnail_url}} class="card-img-top" alt={{title}}>
+                        <div class="card-body">
+                        <h5 class="card-title fw-bold fs-5">{{title}}</h5>
+                        </div>
+                    </div>
                 </div>
-              </div>
-        </div>
-        {% endif %}
-        {% if error %}
-        <div class="" style="padding: 10px;">
-            <h4 class="fw-bold fs-5" >{{error}}</h4>
-        </div>
-        {% endif %}
+                {% endif %}
+                {% if error %}
+                <div class="" style="padding: 10px;">
+                    <h4 class="fw-bold fs-5" >{{error}}</h4>
+                </div>
+                {% endif %}
+            </div>
 
-        {% if myVideoStreams %}
-        <div class="container">
-            <table class="table table-striped mt-4" id="myTable">
-                <thead>
-                    <tr class="header">
-                        <th>Video Type</th>
-                        <th>Resolution</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    {% for item in myVideoStreams %}
-                    <tr>
-                        <td>{{item.mime_type}}</td>
-                        <td>{{item.resolution}}</td>
-                        <td>
-                            <a href="{% url 'download_video' video_url=video_url resolution=item.resolution %}">
-                            <button type="button" class="btn btn-outline-info">Download</button></a>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+            <div class="col-sm-12 col-md-8 col-lg-8">
+                {% if myVideoStreams %}
+                <h6>MP4 Format:</h6>
+                {% for item in myVideoStreams %}
+                    {% if item.mime_type and "mp4" in item.mime_type %}
+                        <a href="{% url 'download_video' addPrefix=False counter='1' video_url=video_url resolution=item.resolution %}">
+                            <button type="button" class="btn btn-success m-1">
+                                {{item.resolution}} ({{item.filesize}}) MB
+                                {% if not item.audio %}
+                                    <img src='/static/images/no-audio.png' class="" height="20px" width="20px" alt="No audio icon">
+                                {% endif %}
+                            </button>
+                        </a>
+                    {% endif %}
+                {% endfor %}
+                <h6>WebM Format:</h6>
+                {% for item in myVideoStreams %}
+                    {% if item.mime_type and "webm" in item.mime_type %}
+                    <a href="{% url 'download_video' addPrefix=False counter='1' video_url=video_url resolution=item.resolution %}">
+                        <button type="button" class="btn btn-primary m-1">
+                                {{item.resolution}} ({{item.filesize}}) MB
+                                {% if not item.audio %}
+                                    <img src='/static/images/no-audio.png' class="" height="20px" width="20px" alt="No audio icon">
+                                {% endif %}
+                            </button>
+                        </a>
+                    {% endif %}
+                {% endfor %}
+                <h6>3GP Format:</h6>
+                {% for item in myVideoStreams %}
+                    {% if item.mime_type and "3gp" in item.mime_type %}
+                    <a href="{% url 'download_video' addPrefix=False counter='1' video_url=video_url resolution=item.resolution %}">
+                        <button type="button" class="btn btn-success m-1">
+                                {{item.resolution}} ({{item.filesize}}) MB
+                                {% if not item.audio %}
+                                    <img src='/static/images/no-audio.png' class="" height="20px" width="20px" alt="No audio icon">
+                                {% endif %}
+                            </button>
+                        </a>
+                    {% endif %}
+                {% endfor %}
+                {% endif %}
+            </div>
         </div>
-        {% endif %}
     </div>
 </div>
 {% endblock body %}
